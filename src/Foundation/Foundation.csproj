@@ -1766,6 +1766,7 @@
     <Content Include="modules\_protected\Commerce\Commerce.zip" />
     <Content Include="modules\_protected\EPiServer.Commerce.UI.CustomerService\EPiServer.Commerce.UI.CustomerService.zip" />
     <Content Include="modules\_protected\EPiServer.Personalization\EPiServer.Personalization.zip" />
+    <Content Include="License.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

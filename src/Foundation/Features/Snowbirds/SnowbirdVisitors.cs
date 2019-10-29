@@ -16,10 +16,11 @@ namespace Foundation.Features.EpiVisitor
             {
                 case "Meteo":
                     // get the service call api to find out the meteo
-                    var resultApi = "10";
-                    if(Model.Criteria == resultApi)
-                        return true;
-                    break;
+                    var resultApi = int.Parse("10");
+                    var temp = int.Parse(Model.Criteria.Substring(1));
+
+                    return (Model.Criteria.Contains("<") && resultApi <= temp)
+                           || (Model.Criteria.Contains(">") && resultApi >= temp);
 
                 case "Sports":
 

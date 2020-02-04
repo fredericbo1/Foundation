@@ -1480,7 +1480,6 @@
     <Content Include="Assets\scss\templates\widgets\_breadcrumb.scss" />
     <Content Include="Assets\scss\templates\pages\_blog-item.scss" />
     <Content Include="Assets\scss\templates\pages\_blog-list.scss" />
-    <Content Include="connectionStrings.config" />
     <Content Include="Assets\js\features\foundation.cms.personalization.js" />
     <Content Include="Assets\scss\vendors\bootstrap-4.3.1\bootstrap-grid.scss" />
     <Content Include="Assets\scss\vendors\bootstrap-4.3.1\bootstrap-reboot.scss" />
@@ -1847,7 +1846,6 @@
     <Content Include="modules\_protected\EPiServer.Commerce.Shell\EPiServer.Commerce.Shell.zip" />
     <Content Include="modules\_protected\Commerce\Commerce.zip" />
     <Content Include="modules\_protected\EPiServer.Commerce.UI.CustomerService\EPiServer.Commerce.UI.CustomerService.zip" />
-    <Content Include="App_Data\GeoLiteCity.dat" />
     <Content Include="modules\_protected\CmsAudit\Views\web.config" />
     <Content Include="modules\_protected\CmsAudit\Views\VisitorGroups\Index.cshtml" />
     <Content Include="modules\_protected\CmsAudit\Views\Shared\_layout.cshtml" />
@@ -1862,6 +1860,7 @@
     <Content Include="modules\_protected\AdvancedTask\AdvancedTask.zip" />
     <Content Include="modules\_protected\advanced-cms-forms\web.config" />
     <Content Include="modules\_protected\advanced-cms-forms\advanced-cms-forms.zip" />
+    <Content Include="connectionStrings.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -1880,6 +1879,7 @@
     <Content Include="Views\VirtualTemplates\Buttons\MakeVirtual.cshtml" />
     <Content Include="Views\VirtualTemplates\Buttons\Edit.cshtml" />
     <Content Include="Views\VirtualTemplates\Buttons\Compare.cshtml" />
+    <None Include="Properties\PublishProfiles\TMX-RETAIL-02 - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

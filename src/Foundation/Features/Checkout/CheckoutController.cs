@@ -142,9 +142,9 @@ namespace Foundation.Features.Checkout
                 }
             }
 
-            if (TempData["ErrorMessages"] != null)
+            if (TempData[Constant.ErrorMessages] != null)
             {
-                ViewBag.ErrorMessages = (string)TempData["ErrorMessages"];
+                ViewBag.ErrorMessages = (string)TempData[Constant.ErrorMessages];
             }
 
             return View("Checkout", viewModel);
@@ -455,7 +455,7 @@ namespace Foundation.Features.Checkout
                 var purchaseOrder = _checkoutService.PlaceOrder(CartWithValidationIssues.Cart, ModelState, checkoutViewModel);
                 if (purchaseOrder == null)
                 {
-                    TempData["ErrorMessages"] = "There is no payment was processed";
+                    TempData[Constant.ErrorMessages] = "There is no payment was processed";
                     return RedirectToAction("Index");
                 }
 
@@ -487,10 +487,10 @@ namespace Foundation.Features.Checkout
                 await _recommendationService.TrackOrder(HttpContext, purchaseOrder);
 
                 return Redirect(_checkoutService.BuildRedirectionUrl(checkoutViewModel, purchaseOrder, confirmationSentSuccessfully));
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
-                TempData["ErrorMessages"] = e.Message;
+                TempData[Constant.ErrorMessages] = e.Message;
                 return RedirectToAction("Index");
             }
         }

@@ -16,6 +16,11 @@ namespace Foundation.Cms.Pages
     public class StandardPage : FoundationPageData
     {
         [CultureSpecific]
+        [SelectOne(SelectionFactoryType = typeof(HeroBlockTextColorSelectionFactory))]
+        [Display(Name = "Page title color", GroupName = SystemTabNames.Content, Order = 203)]
+        public virtual string PageTitleColor { get; set; }
+
+        [CultureSpecific]
         [UIHint(UIHint.Image)]
         [Display(Name = "Background image", GroupName = SystemTabNames.Content, Order = 205)]
         public virtual ContentReference BackgroundImage { get; set; }
@@ -36,6 +41,7 @@ namespace Foundation.Cms.Pages
         {
             base.SetDefaultValues(contentType);
 
+            PageTitleColor = ColorThemes.None;
             TopPaddingMode = FoundationStandardPageTopPaddingModeSelectionFactory.FoundationStandardPageTopPaddingModes.None;
         }
     }

@@ -1,3 +1,4 @@
+using EPiBootstrapArea;
 using EPiServer.Core;
 using EPiServer.DataAbstraction;
 using EPiServer.DataAnnotations;
@@ -12,6 +13,7 @@ namespace Foundation.Cms.Blocks
         GUID = "EB67A99A-E239-41B8-9C59-20EAA5936047",
         Description = "Image block with overlay for text",
         GroupName = CmsGroupNames.Content)]
+    [DefaultDisplayOption(ContentAreaTags.OneThirdWidth)]
     [ImageUrl("~/assets/icons/cms/blocks/CMS-icon-block-26.png")]
     public class TeaserBlock : FoundationBlockData
     {
@@ -30,19 +32,15 @@ namespace Foundation.Cms.Blocks
         public virtual string HeadingStyle { get; set; }
 
         [CultureSpecific]
-        [UIHint(UIHint.Textarea)]
-        [Required(AllowEmptyStrings = false)]
         [Display(GroupName = SystemTabNames.Content, Order = 20)]
         public virtual string Description { get; set; }
 
-        [UIHint(UIHint.Textarea)]
-        [Required(AllowEmptyStrings = false)]
-        [Display(GroupName = SystemTabNames.Content, Order = 20)]
-        public virtual string Text { get; set; }
+        [Display(GroupName = SystemTabNames.Content, Order = 30)]
+        public virtual XhtmlString Text { get; set; }
 
+        [Required]
         [CultureSpecific]
         [UIHint(UIHint.Image)]
-        [Required(AllowEmptyStrings = false)]
         [Display(GroupName = SystemTabNames.Content, Order = 40)]
         public virtual ContentReference Image { get; set; }
 
@@ -51,10 +49,6 @@ namespace Foundation.Cms.Blocks
         [Display(Name = "Image size (%)", GroupName = SystemTabNames.Content, Order = 41)]
         public virtual int ImageSize { get; set; }
 
-        [CultureSpecific]
-        [SelectOne(SelectionFactoryType = typeof(TeaserBlockBackgroundColorSelectionFactory))]
-        [Display(Name = "Background color", GroupName = SystemTabNames.Content, Order = 50)]
-        public virtual string BackgroundColor { get; set; }
 
         [CultureSpecific]
         [SelectOne(SelectionFactoryType = typeof(TeaserBlockTextColorSelectionFactory))]
@@ -68,7 +62,7 @@ namespace Foundation.Cms.Blocks
 
         [CultureSpecific]
         [SelectOne(SelectionFactoryType = typeof(TeaserBlockElementAlignmentSelectionFactory))]
-        [Display(Name = "Elements alignment", GroupName = SystemTabNames.Content, Order = 81)]
+        [Display(Name = "Elements alignment (except Text)", GroupName = SystemTabNames.Content, Order = 81)]
         public virtual string ElementsAlignment { get; set; }
 
         [CultureSpecific]

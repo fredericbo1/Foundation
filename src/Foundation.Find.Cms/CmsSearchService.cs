@@ -6,12 +6,12 @@ using EPiServer.Find.UnifiedSearch;
 using EPiServer.Globalization;
 using EPiServer.Web;
 using Foundation.Cms.Extensions;
+using Foundation.Cms.Media;
 using Foundation.Cms.Pages;
 using Foundation.Find.Cms.ViewModels;
 using Geta.EpiCategories;
 using Geta.EpiCategories.Find.Extensions;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Foundation.Find.Cms
 {
@@ -39,6 +39,12 @@ namespace Foundation.Find.Cms
                     .Skip((filterOptions.Page - 1) * filterOptions.PageSize)
                     .Take(filterOptions.PageSize)
                     .ApplyBestBets();
+
+                //Include images in search results
+                if (!filterOptions.IncludeImagesContent)
+                {
+                    query = query.Filter(x => !x.MatchType(typeof(ImageMediaData)));
+                }
 
                 //Exclude content from search
                 query = query.Filter(x => !(x as FoundationPageData).ExcludeFromSearch.Exists() | (x as FoundationPageData).ExcludeFromSearch.Match(false));

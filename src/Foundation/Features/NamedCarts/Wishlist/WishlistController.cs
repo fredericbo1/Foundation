@@ -8,6 +8,7 @@ using EPiServer.Globalization;
 using EPiServer.Tracking.Commerce;
 using EPiServer.Web.Mvc;
 using EPiServer.Web.Routing;
+using Foundation.Commerce;
 using Foundation.Commerce.Customer.Services;
 using Foundation.Commerce.Models.Catalog;
 using Foundation.Commerce.Models.Pages;
@@ -277,7 +278,7 @@ namespace Foundation.Features.NamedCarts.Wishlist
                     returnedMessages.Add(responseMessage);
                 }
             }
-            Session["ErrorMesages"] = returnedMessages;
+            Session[Constant.ErrorMessages] = returnedMessages;
 
             return Json(returnedMessages, JsonRequestBehavior.AllowGet);
         }

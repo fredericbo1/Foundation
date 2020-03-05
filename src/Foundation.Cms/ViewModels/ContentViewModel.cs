@@ -3,6 +3,7 @@ using EPiServer.Core;
 using EPiServer.Editor;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
+using Foundation.Cms.Extensions;
 using Foundation.Cms.Pages;
 
 namespace Foundation.Cms.ViewModels
@@ -30,14 +31,27 @@ namespace Foundation.Cms.ViewModels
             {
                 if (_startPage == null)
                 {
+                    ContentReference currentStartPageLink = ContentReference.StartPage;
+                    if (CurrentContent != null)
+                    {
+                        currentStartPageLink = CurrentContent.GetRelativeStartPage();
+                    }
+
                     if (PageEditing.PageIsInEditMode)
                     {
-                        var startPageRef = _contentVersion.Service.LoadCommonDraft(ContentReference.StartPage, ContentLanguage.PreferredCulture.Name);
-                        _startPage = _contentLoader.Service.Get<CmsHomePage>(startPageRef.ContentLink);
+                        var startPageRef = _contentVersion.Service.LoadCommonDraft(currentStartPageLink, ContentLanguage.PreferredCulture.Name);
+                        if (startPageRef == null)
+                        {
+                            _startPage = _contentLoader.Service.Get<CmsHomePage>(currentStartPageLink);
+                        }
+                        else
+                        {
+                            _startPage = _contentLoader.Service.Get<CmsHomePage>(startPageRef.ContentLink);
+                        }
                     }
                     else
                     {
-                        _startPage = _contentLoader.Service.Get<CmsHomePage>(ContentReference.StartPage);
+                        _startPage = _contentLoader.Service.Get<CmsHomePage>(currentStartPageLink);
                     }
                 }
 

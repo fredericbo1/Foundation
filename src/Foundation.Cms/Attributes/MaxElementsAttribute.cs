@@ -2,7 +2,6 @@
 using EPiServer.SpecializedProperties;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Web.ModelBinding;
 
 namespace Foundation.Cms.Attributes
 {
@@ -18,7 +17,7 @@ namespace Foundation.Cms.Attributes
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if(value == null)
+            if (value == null)
             {
                 return null;
             }

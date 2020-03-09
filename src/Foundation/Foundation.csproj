@@ -1876,6 +1876,7 @@
     <Content Include="Views\VirtualTemplates\Buttons\MakeVirtual.cshtml" />
     <Content Include="Views\VirtualTemplates\Buttons\Edit.cshtml" />
     <Content Include="Views\VirtualTemplates\Buttons\Compare.cshtml" />
+    <None Include="Properties\PublishProfiles\p5-epi - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

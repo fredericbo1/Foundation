@@ -5,7 +5,7 @@ namespace Foundation.Find.Facets.Config
     public interface IFacetConfigFactory
     {
         List<FacetDefinition> GetDefaultFacetDefinitions();
-        List<FacetFilterConfigurationItem> GetFacetFilterConfigurationItems();
+        List<FacetFilterConfigurationItem> GetFacetFilterConfigurationItems<T>();
         FacetDefinition GetFacetDefinition(FacetFilterConfigurationItem facetConfiguration);
     }
 }

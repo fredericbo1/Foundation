@@ -1,3 +1,5 @@
+@using Foundation.Features.Collection
+
 @model ContentViewModel<CollectionPage>
 
 @Html.PropertyFor(x => x.CurrentContent.Navigation)
@@ -9,7 +11,10 @@
             <div class="col-4">
                 @if (!ContentReference.IsNullOrEmpty(Model.CurrentContent.Image))
                 {
-                    <img class="img-fluid" src="@Url.ContentUrl(Model.CurrentContent.Image)" />
+                    <picture class="img-fluid">
+                        <source data-srcset="@Url.ContentUrl(Model.CurrentContent.Image)?format=webp" type="image/webp">
+                        <img data-src="@Url.ContentUrl(Model.CurrentContent.Image)" class="img-fluid lazyload" />
+                    </picture>
                 }
                 else if (!ContentReference.IsNullOrEmpty(Model.CurrentContent.Video))
                 {

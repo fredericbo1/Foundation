@@ -1,10 +1,11 @@
 ﻿@using System.Web.Mvc.Html
-@using Foundation.Commerce.ViewModels.Header
+@using Foundation.Features.MyOrganization.Budgeting
+
 @model BudgetingPageViewModel
+
 @{
     Layout = "~/Features/MyOrganization/_MyOrganizationLayout.cshtml";
 }
-
 
 @Html.PropertyFor(model => model.CurrentContent.MainBody)
 <div class="row">
@@ -13,7 +14,6 @@
     </div>
 </div>
 <div class="row">
-
     @using (Html.BeginForm("UpdateBudget", "Budgeting", FormMethod.Post, new { @class = "col-12" }))
     {
         @Html.AntiForgeryToken()
@@ -57,7 +57,7 @@
                         statuses.Add(new KeyValuePair<string, string>(Html.TranslateFallback("/B2B/Budgeting/Planned", "Planned"), "Planned"));
                         statuses.Add(new KeyValuePair<string, string>(Html.TranslateFallback("/B2B/Budgeting/OnHold", "OnHold"), "OnHold"));
                     }
-                    @Helpers.RenderDropdown(statuses, "", "statusBudget", "statusBudget")
+                    @Helpers.RenderDropdown(statuses, Model.NewBudgetOption.Status, "statusBudget", "statusBudget")
                 </div>
             </div>
             <div class="form-group col-6">
@@ -68,7 +68,7 @@
                         currencies.Add(new KeyValuePair<string, string>(Model.NewBudgetOption.Currency, Model.NewBudgetOption.Currency));
                     }
 
-                    @Helpers.RenderDropdown(currencies, "", "currencyBudget", "currencyBudget")
+                    @Helpers.RenderDropdown(currencies, Model.NewBudgetOption.Currency, "currencyBudget", "currencyBudget")
                 </div>
             </div>
         </div>

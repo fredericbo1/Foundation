@@ -1,4 +1,4 @@
-﻿using Foundation.Commerce.Customer.ViewModels;
+﻿using Foundation.Features.MyAccount.AddressBook;
 
 namespace Foundation.Features.Login
 {
@@ -14,8 +14,10 @@ namespace Foundation.Features.Login
         public UserViewModel()
         {
             LoginViewModel = new LoginViewModel();
-            RegisterAccountViewModel = new RegisterAccountViewModel();
-            RegisterAccountViewModel.Address = new AddressModel();
+            RegisterAccountViewModel = new RegisterAccountViewModel
+            {
+                Address = new AddressModel()
+            };
         }
     }
 }

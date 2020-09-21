@@ -6,12 +6,18 @@ using EPiServer.DataAbstraction;
 using EPiServer.ServiceLocation;
 using EPiServer.Web;
 using EPiServer.Web.Routing;
-using Foundation.Cms.Pages;
-using Foundation.Cms.ViewModels;
-using Foundation.Commerce.Catalog.ViewModels;
+using Foundation.Cms.Extensions;
+using Foundation.Cms.Settings;
 using Foundation.Commerce.Extensions;
-using Foundation.Demo.Models;
-using Foundation.Find.Cms.Models.Pages;
+using Foundation.Features.Blog.BlogItemPage;
+using Foundation.Features.CatalogContent.Product;
+using Foundation.Features.Category;
+using Foundation.Features.Home;
+using Foundation.Features.Locations.LocationItemPage;
+using Foundation.Features.Locations.TagPage;
+using Foundation.Features.Settings;
+using Foundation.Features.Shared;
+using Foundation.Features.StandardPage;
 using Foundation.Infrastructure.OpenGraph;
 using Mediachase.Commerce;
 using System;
@@ -26,7 +32,10 @@ namespace Foundation.Helpers
     {
         private static readonly Lazy<IContentLoader> _contentLoader = new Lazy<IContentLoader>(() => ServiceLocator.Current.GetInstance<IContentLoader>());
         private static readonly Lazy<UrlResolver> _urlResolver = new Lazy<UrlResolver>(() => ServiceLocator.Current.GetInstance<UrlResolver>());
+        private static readonly Lazy<ISettingsService> _settingsService = new Lazy<ISettingsService>(() => ServiceLocator.Current.GetInstance<ISettingsService>());
         private static readonly Lazy<IContentTypeRepository> _contentTypeRepository = new Lazy<IContentTypeRepository>(() => ServiceLocator.Current.GetInstance<IContentTypeRepository>());
+
+        public static LayoutSettings GetLayoutSettings(this HtmlHelper helper) => _settingsService.Value.GetSiteSettings<LayoutSettings>();
 
         public static IHtmlString RenderOpenGraphMetaData(this HtmlHelper helper, IContentViewModel<IContent> contentViewModel)
         {
@@ -83,7 +92,7 @@ namespace Foundation.Helpers
 
             switch (contentViewModel.CurrentContent)
             {
-                case DemoHomePage homePage:
+                case HomePage homePage:
                     var openGraphHomePage = new OpenGraphHomePage(metaTitle, new OpenGraphImage(imageUrl), GetUrl(homePage.ContentLink))
                     {
                         Description = homePage.PageDescription,
@@ -125,9 +134,13 @@ namespace Foundation.Helpers
                     openGraphLocationItemPage.Category = categories;
 
                     var tags = new List<string>();
-                    foreach (var item in ((LocationItemPage)contentViewModel.CurrentContent).Tags.Items)
+                    var items = ((LocationItemPage)contentViewModel.CurrentContent).Categories;
+                    if (items != null)
                     {
-                        tags.Add(item.GetContent().Name);
+                        foreach (var item in items)
+                        {
+                            tags.Add(_contentLoader.Value.Get<StandardCategory>(item).Name);
+                        }
                     }
                     openGraphLocationItemPage.Tags = tags;
 
@@ -204,9 +217,13 @@ namespace Foundation.Helpers
 
         private static string GetDefaultImageUrl()
         {
-            var startPage = _contentLoader.Value.Get<DemoHomePage>(ContentReference.StartPage);
+            var layoutSettings = _settingsService.Value.GetSiteSettings<LayoutSettings>();
+            if (layoutSettings?.SiteLogo.IsNullOrEmpty() ?? true)
+            {
+                return "https://via.placeholder.com/150";
+            }
             var siteUrl = SiteDefinition.Current.SiteUrl;
-            var url = new Uri(siteUrl, UrlResolver.Current.GetUrl(startPage.SiteLogo));
+            var url = new Uri(siteUrl, UrlResolver.Current.GetUrl(layoutSettings.SiteLogo));
 
             return url.ToString();
         }
@@ -221,7 +238,7 @@ namespace Foundation.Helpers
 
         private static List<string> GetNodes(ProductContent currentContent)
         {
-            List<string> nodeList = new List<string>();
+            var nodeList = new List<string>();
 
             foreach (var nodeRelation in currentContent.GetCategories())
             {

@@ -3,7 +3,7 @@ using EPiServer.Core;
 using EPiServer.Filters;
 using EPiServer.Framework.Web;
 using EPiServer.ServiceLocation;
-using Foundation.Cms.Pages;
+using EPiServer.Web.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +54,6 @@ namespace Foundation.Cms.Extensions
 
         public static void AddPageBrowseHistory(this PageData page)
         {
-
             var history = _cookieService.Get("PageBrowseHistory");
             var values = string.IsNullOrEmpty(history) ? new List<int>() :
                 history.Split(new[] { Delimiter }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToInt32(x)).ToList();
@@ -94,16 +93,18 @@ namespace Foundation.Cms.Extensions
                 .ToList();
         }
 
-        public static ContentReference GetRelativeStartPage(this IContent content)
-        {
-            if (content is CmsHomePage)
-            {
-                return ContentReference.StartPage;
-            }
+        /// <summary>
+        /// Helper method to get a URL string for an IContent
+        /// </summary>
+        /// <param name="content">The routable content item to get the URL for.</param>
+        /// <param name="isAbsolute">Whether the full URL including protocol and host should be returned.</param>
+        public static string GetUrl<T>(this T content, bool isAbsolute = false) where T : IContent, ILocale, IRoutable => content.GetUri(isAbsolute).ToString();
 
-            var ancestors = _contentLoader.Value.GetAncestors(content.ContentLink);
-            var startPage = ancestors.FirstOrDefault(x => x is CmsHomePage) as CmsHomePage;
-            return startPage == null ? ContentReference.StartPage : startPage.ContentLink;
-        }
+        /// <summary>
+        /// Helper method to get a Uri for an IContent
+        /// </summary>
+        /// <param name="content">The routable content item to get the URL for.</param>
+        /// <param name="isAbsolute">Whether the full URL including protocol and host should be returned.</param>
+        public static Uri GetUri<T>(this T content, bool isAbsolute = false) where T : IContent, ILocale, IRoutable => content.ContentLink.GetUri(content.Language.Name, isAbsolute);
     }
 }

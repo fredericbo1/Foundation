@@ -1,15 +1,13 @@
-﻿using EPiServer.Web.Mvc;
-using Foundation.Cms.ViewModels;
-using Foundation.Demo.Models;
+﻿using EPiServer.Tracking.PageView;
+using EPiServer.Web.Mvc;
+using Foundation.Features.Shared;
 using System.Web.Mvc;
 
 namespace Foundation.Features.Home
 {
-    public class HomeController : PageController<DemoHomePage>
+    public class HomeController : PageController<HomePage>
     {
-        public ActionResult Index(DemoHomePage currentContent)
-        {
-            return View(ContentViewModel.Create<DemoHomePage>(currentContent));
-        }
+        [PageViewTracking]
+        public ActionResult Index(HomePage currentContent) => View(ContentViewModel.Create<HomePage>(currentContent));
     }
 }

@@ -1,26 +1,24 @@
 ﻿@using EPiServer
-@using EPiServer.Framework.Web.Resources
 @using EPiServer.Web.Mvc.Html
-@using Foundation.Find.Cms.Locations
+@using EPiServer.ServiceLocation
+@using EPiServer.Framework.Web.Resources
+@using Foundation.Features.Category
+@using Foundation.Features.Locations
+@using Foundation.Features.Locations.LocationListPage
 
 @model LocationListViewModel
 
 @{
     ClientResources.RequireStyle(Href("/Assets/scss/vendors/bootstrap-slider/bootstrap-slider.css")).AtHeader();
+    var _contentRepository = ServiceLocator.Current.GetInstance<IContentRepository>();
 }
 
 @section AdditionalScripts
 {
-    <script type="text/javascript" src="/Assets/js/vendors/jsuri/jsuri-1.1.1.min.js"></script>
-    <script type="text/javascript" src="/Assets/js/vendors/bootstrap-slider/bootstrap-slider.js"></script>
-    <script type="text/javascript" src="/Assets/js/Features/Selective/Locations.js"></script>
-    <script type="text/javascript">
-        var locations = new Locations();
-        function GetMap() { locations.loadMapScenario(); };
-    </script>
-    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?&callback=GetMap' async defer></script>
+    <script type="text/javascript" src="~/Assets/js/vendors/jsuri/jsuri-1.1.1.min.js"></script>
+    <script type="text/javascript" src="~/Assets/js/vendors/bootstrap-slider/bootstrap-slider.js"></script>    
 }
-<section class="main-container col2-right-layout wow bounceInUp animated">
+<section class="wow bounceInUp animated">
     <div class="main container">
         <div class="row">
             @if ((Model.CurrentContent.MainBody != null && !Model.CurrentContent.MainBody.IsEmpty) || PageEditing.PageIsInEditMode)
@@ -46,10 +44,10 @@
                         {
                             foreach (var item in Model.CurrentContent.FilterArea.FilteredItems)
                             {
-                                var b = DataFactory.Instance.Get<BlockData>(item.ContentLink) as IFilterBlock;
+                                var b = _contentRepository.Get<BlockData>(item.ContentLink) as IFilterBlock;
                                 if (b != null)
                                 {
-                                    @Html.Partial(b.GetOriginalType().Name, Model)
+                                    @Html.Partial(b.GetOriginalType().Name, Model, new ViewDataDictionary { { "FilterTitle", b.FilterTitle ?? "" }, { "AllConditionText", b.AllConditionText ?? "" } })
                                 }
                             }
                         }
@@ -70,7 +68,10 @@
                                         @if (!ContentReference.IsNullOrEmpty(location.Image))
                                         {
                                             <div class="col-lg-5">
-                                                <img src="@Url.ContentUrl(location.Image)" class="location__img img-responsive" alt="@location.Name">
+                                                <picture class="location__img img-responsive">
+                                                    <source data-srcset="@Url.ContentUrl(location.Image)?format=webp" type="image/webp" alt="@location.Name">
+                                                    <img data-src="@Url.ContentUrl(location.Image)" class="location__img img-responsive lazyload" alt="@location.Name" />
+                                                </picture>
                                             </div>
                                             <div class="col-lg-7 location__description">
                                                 @location.MainIntro
@@ -93,13 +94,14 @@
                                             <a href="@Url.ContentUrl(location.ContentLink)" class="pull-right">@Html.TranslateFallback("/common/readmore", "Read more »")</a>
                                         </div>
                                         <div class="col-xs-12">
-                                            @if (location.Tags != null)
+                                            @if (location.Categories != null)
                                             {
                                                 <i class="fa fa-tags"></i>
-                                                foreach (var tag in location.Tags.FilteredItems)
+                                                foreach (var tag in location.Categories)
                                                 {
-                                                    <span data-epi-block-id="@tag.ContentLink.ToString()">
-                                                        <a href="@Url.ContentUrl(tag.ContentLink)"><span class="badge badge-dark">@tag.GetContent().Name</span></a>
+                                                    var t = _contentRepository.Get<StandardCategory>(tag);
+                                                    <span data-epi-block-id="@tag.ToString()">
+                                                        <a href="@Url.ContentUrl(tag)"><span class="badge badge-dark">@t.Name</span></a>
                                                     </span>
                                                 }
                                             }

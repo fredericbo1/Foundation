@@ -1,5 +1,6 @@
 ﻿using EPiServer.Commerce.Routing;
 using EPiServer.Framework.Initialization;
+using Foundation.Commerce.Install;
 using Mediachase.BusinessFoundation.Configuration;
 using Mediachase.BusinessFoundation.Core;
 using Mediachase.BusinessFoundation.Data;
@@ -21,21 +22,29 @@ namespace Foundation.Commerce.Extensions
 {
     public static class InitializationEngineExtensions
     {
-        private static readonly XmlSerializer _listViewProfileXmlSerializer = new XmlSerializer(typeof(ListViewProfile), new Type[]{
-            typeof(int[]),
-            typeof(double[]),
-            typeof(decimal[]),
-            typeof(PrimaryKeyId[]),
-            typeof(string[]),
-            typeof(DateTime[]),
-            typeof(object[])
-        });
+        private static readonly XmlSerializer _listViewProfileXmlSerializer = new XmlSerializer(typeof(ListViewProfile),
+            new Type[]
+            {
+                typeof(int[]),
+                typeof(double[]),
+                typeof(decimal[]),
+                typeof(PrimaryKeyId[]),
+                typeof(string[]),
+                typeof(DateTime[]),
+                typeof(object[])
+            });
 
         public static void InitializeFoundationCommerce(this InitializationEngine context)
         {
             CatalogRouteHelper.MapDefaultHierarchialRouter(RouteTable.Routes, false);
             AddBusinessFoundationIfNeccessary();
             AddOrderMetaFieldsIfNesccessary();
+            var installService = context.Locate.Advanced.GetInstance<IInstallService>();
+            if (!installService.ShouldInstall())
+            {
+                return;
+            }
+            installService.RunInstallSteps();
         }
 
         private static void AddOrderMetaFieldsIfNesccessary()
@@ -124,6 +133,7 @@ namespace Foundation.Commerce.Extensions
                     orgReference.Attributes.Add(McDataTypeAttribute.ReferenceDisplayOrder, "10000");
                     builder.SaveChanges();
                 }
+
                 budgetClass.AddPermissions();
 
                 UpdateMetaForm(GetBudgetBaseForm());
@@ -210,10 +220,7 @@ namespace Foundation.Commerce.Extensions
             }
         }
 
-        private static void UpdateMetaForm(FormDocument formDocument)
-        {
-            SqlFormDocumentManager.Save(formDocument);
-        }
+        private static void UpdateMetaForm(FormDocument formDocument) => SqlFormDocumentManager.Save(formDocument);
 
         private static FormDocument GetContactBaseForm()
         {

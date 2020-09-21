@@ -11,15 +11,12 @@ namespace Foundation.Commerce.Marketing
     {
         private readonly UniqueCouponService _couponService;
 
-        public FoundationCouponFilter(UniqueCouponService couponService)
-        {
-            _couponService = couponService;
-        }
+        public FoundationCouponFilter(UniqueCouponService couponService) => _couponService = couponService;
 
         public PromotionFilterContext Filter(PromotionFilterContext filterContext, IEnumerable<string> couponCodes)
         {
             var codes = couponCodes.ToList();
-            var userEmail = PrincipalInfo.CurrentPrincipal?.GetCustomerContact()?.Email;
+            _ = PrincipalInfo.CurrentPrincipal?.GetCustomerContact()?.Email;
 
             foreach (var includedPromotion in filterContext.IncludedPromotions)
             {
@@ -37,17 +34,13 @@ namespace Foundation.Commerce.Marketing
                 else
                 {
                     CheckMultipleCoupons(filterContext, codes, includedPromotion, uniqueCodes);
-
                 }
             }
 
             return filterContext;
         }
 
-        protected virtual IEqualityComparer<string> GetCodeEqualityComparer()
-        {
-            return StringComparer.OrdinalIgnoreCase;
-        }
+        protected virtual IEqualityComparer<string> GetCodeEqualityComparer() => StringComparer.OrdinalIgnoreCase;
 
         private void CheckSingleCoupon(PromotionFilterContext filterContext, IEnumerable<string> couponCodes, string couponCode, PromotionData includedPromotion)
         {
@@ -75,6 +68,7 @@ namespace Foundation.Commerce.Marketing
                     return;
                 }
             }
+
             filterContext.ExcludePromotion(includedPromotion, FulfillmentStatus.CouponCodeRequired,
                 filterContext.RequestedStatuses.HasFlag(RequestFulfillmentStatus.NotFulfilled));
         }

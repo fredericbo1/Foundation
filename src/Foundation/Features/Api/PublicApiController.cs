@@ -5,10 +5,11 @@ using EPiServer.Web.Routing;
 using Foundation.Cms;
 using Foundation.Cms.Extensions;
 using Foundation.Cms.Identity;
-using Foundation.Cms.Personalization;
 using Foundation.Commerce.Customer.Services;
-using Foundation.Commerce.Customer.ViewModels;
+using Foundation.Features.Login;
+using Foundation.Features.MyAccount.AddressBook;
 using Foundation.Infrastructure.Services;
+using Foundation.Personalization;
 using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
@@ -89,7 +90,6 @@ namespace Foundation.Features.Api
                         .SelectMany(k => ModelState[k].Errors)
                         .Select(m => m.ErrorMessage).ToArray()
                 });
-
             }
 
             viewModel.Address.BillingDefault = true;
@@ -189,17 +189,14 @@ namespace Foundation.Features.Api
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult ExternalLogin(string provider, string returnUrl)
-        {
+        public ActionResult ExternalLogin(string provider, string returnUrl) =>
             // Request a redirect to the external login provider
-            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", new { returnUrl }));
-        }
+            new ChallengeResult(provider, Url.Action("ExternalLoginCallback", new { returnUrl }));
 
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
             var loginInfo = await _customerService.GetExternalLoginInfoAsync();
-
 
             if (loginInfo == null)
             {
@@ -247,7 +244,6 @@ namespace Foundation.Features.Api
                     return View("ExternalLoginFailure");
                 }
 
-
                 var eMail = socialLoginDetails.ExternalIdentity.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Email))?.Value;
                 var names = socialLoginDetails.ExternalIdentity.Name.Split(' ');
                 var firstName = names[0];
@@ -282,7 +278,6 @@ namespace Foundation.Features.Api
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult TrackHeroBlock(string blockId, string blockName, string pageName)
         {
             _cmsTrackingService.HeroBlockClicked(_httpContextBase, blockId, blockName, pageName);
@@ -293,7 +288,6 @@ namespace Foundation.Features.Api
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult TrackVideoBlock(string blockId, string blockName, string pageName)
         {
             _cmsTrackingService.VideoBlockViewed(_httpContextBase, blockId, blockName, pageName);
@@ -334,9 +328,7 @@ namespace Foundation.Features.Api
                 return uri.PathAndQuery;
             }
             return returnUrl;
-
         }
-
 
     }
 }

@@ -1,19 +1,23 @@
 ﻿@using EPiServer.AddOns.Helpers
 @using EPiServer.Core
 @using EPiServer.Web.Mvc.Html
-@using Foundation.Cms.EditorDescriptors
+@using ImageProcessor.Web.Episerver
+@using Foundation.Features.Blog.BlogItemPage
+@using Foundation.Features.Shared.SelectionFactories
 
 @model BlogItemPageModel
 
 @if (string.IsNullOrEmpty(Model.Template) || Model.Template == TemplateSelections.Grid)
 {
-
     <div class="blog__thumbnail">
         <div style="width: 100%">
             <picture>
                 @if (!ContentReference.IsNullOrEmpty(Model.CurrentContent.PageImage))
                 {
-                    <img class="img-fluid" src="@Url.WebPFallbackImageUrl(Model.CurrentContent.PageImage, 1200)" />
+                    <picture class="img-fluid">
+                        <source data-srcset="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)&format=webp" type="image/webp">
+                        <img data-src="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)" class="img-fluid lazyload" />
+                    </picture>
                 }
             </picture>
         </div>
@@ -50,11 +54,13 @@
             <picture style="width: 100%">
                 @if (!ContentReference.IsNullOrEmpty(Model.CurrentContent.PageImage))
                 {
-                    <img class="img-fluid preview--image-top__image" src="@Url.WebPFallbackImageUrl(Model.CurrentContent.PageImage, 1200)" />
+                    <picture class="img-fluid preview--image-top__image">
+                        <source data-srcset="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)&format=webp" type="image/webp">
+                        <img data-src="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)" class="img-fluid lazyload" />
+                    </picture>
                 }
             </picture>
         </div>
-
         <div class="col-xs-12 col-@textCol">
             <span>
                 @foreach (var tag in Model.Tags)
@@ -74,7 +80,6 @@
                 <br />
                 <p class="light-text">@Html.Raw(Model.PreviewText)</p>
             }
-
         </div>
     </div>
     <hr />
@@ -83,11 +88,15 @@
 @if (Model.Template == TemplateSelections.ImageTop)
 {
     var imageCol = Model.PreviewOption == PreviewOptions.Full ? 12 : (Model.PreviewOption == PreviewOptions.Half ? 6 : 4);
+
     <div class="col-@imageCol preview--image-top">
         <picture style="height: 100%;">
             @if (!ContentReference.IsNullOrEmpty(Model.CurrentContent.PageImage))
             {
-                <img class="img-fluid preview--image-top__image" src="@Url.WebPFallbackImageUrl(Model.CurrentContent.PageImage, 1200)" />
+                <picture class="img-fluid preview--image-top__image">
+                    <source data-srcset="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)&format=webp" type="image/webp">
+                    <img data-src="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)" class="img-fluid lazyload" />
+                </picture>
             }
         </picture>
         <div>
@@ -96,7 +105,6 @@
                 {
                     <b><a class="account-link" title="@tag.Title" href="@tag.Url">#@tag.Title</a></b>
                 }
-
             </span>
             @if (Model.ShowPublishDate)
             {
@@ -112,7 +120,6 @@
                 <p class="light-text">@Html.Raw(Model.PreviewText)</p>
             }
         </div>
-
     </div>
 }
 
@@ -139,4 +146,103 @@
             <p class="light-text">@Html.Raw(Model.PreviewText)</p>
         }
     </div>
+}
+
+@if (Model.Template == TemplateSelections.Highlight)
+{
+    var imageCol = Model.PreviewOption == PreviewOptions.Half ? 6 : 4;
+    var textCol = imageCol == 12 ? 12 : 12 - imageCol;
+    var flip = ViewData["Flip"] != null ? ((bool)ViewData["Flip"]) : false;
+    if (!Model.CurrentContent.Highlight)
+    {
+        <div class="row">
+            @if (!flip)
+            {
+                <div class="col-xs-12 col-@imageCol">
+                    <picture style="width: 100%">
+                        @if (!ContentReference.IsNullOrEmpty(Model.CurrentContent.PageImage))
+                        {
+                            <picture class="img-fluid preview--image-top__image">
+                                <source data-srcset="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)&format=webp" type="image/webp">
+                                <img data-src="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)" class="img-fluid lazyload" />
+                            </picture>
+                        }
+                    </picture>
+                </div>
+            }
+            <div class="col-xs-12 col-@textCol">
+                <span>
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <b><a class="account-link" title="@tag.Title" href="@tag.Url">#@tag.Title</a></b>
+                    }
+                </span>
+                <h4 class="title">
+                    <a class="link" href="@Model.CurrentContent.ContentLink.GetPublicUrl()">@Model.CurrentContent.MetaTitle</a>
+                </h4>
+                @if (Model.ShowPublishDate)
+                {
+                    <p class="sub-title">@Model.CurrentContent.StartPublish.Value.ToString("dd MMM yyyy")</p>
+                }
+                @if (Model.ShowIntroduction)
+                {
+                    <br />
+                    <p class="light-text">@Html.Raw(Model.PreviewText)</p>
+                }
+            </div>
+            @if (flip)
+            {
+                <div class="col-xs-12 col-@imageCol">
+                    <picture style="width: 100%">
+                        @if (!ContentReference.IsNullOrEmpty(Model.CurrentContent.PageImage))
+                        {
+                            <picture class="img-fluid preview--image-top__image">
+                                <source data-srcset="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)&format=webp" type="image/webp">
+                                <img data-src="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)" class="img-fluid lazyload" />
+                            </picture>
+                        }
+                    </picture>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="screen-width-block">
+            <div class="row">
+                <div class="col-xs-12 col-@imageCol">
+                    <picture style="width: 100%">
+                        @if (!ContentReference.IsNullOrEmpty(Model.CurrentContent.PageImage))
+                        {
+                            <picture class="img-fluid preview--image-top__image">
+                                <source data-srcset="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)&format=webp" type="image/webp">
+                                <img data-src="@Html.ProcessImage(Url.ContentUrl(Model.CurrentContent.PageImage)).Resize(1200, null)" class="img-fluid lazyload" />
+                            </picture>
+                        }
+                    </picture>
+                </div>
+                <div class="col-xs-12 col-@textCol">
+                    <span>
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <b><a class="account-link" title="@tag.Title" href="@tag.Url">#@tag.Title</a></b>
+                        }
+                    </span>
+                    <h4 class="title">
+                        <a class="link" href="@Model.CurrentContent.ContentLink.GetPublicUrl()">@Model.CurrentContent.MetaTitle</a>
+                    </h4>
+                    @if (Model.ShowPublishDate)
+                    {
+                        <p class="sub-title">@Model.CurrentContent.StartPublish.Value.ToString("dd MMM yyyy")</p>
+                    }
+                    @if (Model.ShowIntroduction)
+                    {
+                        <br />
+                        <p class="light-text">@Html.Raw(Model.PreviewText)</p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    <hr />
 }

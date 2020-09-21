@@ -1,8 +1,10 @@
-﻿@model CheckoutViewModel
+﻿@using Foundation.Features.Checkout.ViewModels
+@using Foundation.Features.CatalogContent.Variation
+
+@model CheckoutViewModel
 
 <div class="row">
     <div class="col-12">
-
         @for (var shipmentIndex = 1; shipmentIndex <= Model.Shipments.Count(); shipmentIndex++)
         {
             <div class="card items border-radius-none jsShipmentRow">
@@ -21,7 +23,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-12">
                                     @foreach (var cartItem in Model.Shipments[shipmentIndex - 1].CartItems)
@@ -32,13 +33,15 @@
                                         <div class="checkout__cart-item jsCartItem">
                                             <div class="row">
                                                 <div class="col-md-3">
-                                                    <img class="items__img" src="@cartItem.ImageUrl" alt="@cartItem.DisplayName" title="@cartItem.DisplayName">
+                                                    <picture class="items__img">
+                                                        <source data-srcset="@cartItem.ImageUrl?format=webp" type="image/webp">
+                                                        <img data-src="@cartItem.ImageUrl" class="items__img lazyload" alt="@cartItem.DisplayName" title="@cartItem.DisplayName" />
+                                                    </picture>
                                                 </div>
                                                 <div class="col-md-9">
                                                     <h5 class="items__item">
                                                         <a href="@cartItem.Url">@cartItem.DisplayName</a>
                                                     </h5>
-
                                                     @if (variant != null)
                                                     {
                                                         <p class="items__item-meta">
@@ -49,12 +52,12 @@
                                                         Price:
                                                         @if (cartItem.DiscountedUnitPrice.HasValue)
                                                         {
-                                                            <span class="price__old">@cartItem.PlacedPrice</span>
-                                                            <span class="price__discount">@cartItem.DiscountedUnitPrice</span>
+                                                            <span class="price__old">@cartItem.PlacedPrice.ToString()</span>
+                                                            <span class="price__discount">@cartItem.DiscountedUnitPrice.ToString()</span>
                                                         }
                                                         else
                                                         {
-                                                            <span class="price__discount">@cartItem.PlacedPrice</span>
+                                                            <span class="price__discount">@cartItem.PlacedPrice.ToString()</span>
                                                         }
                                                     </p>
                                                     <div class="items__quantity-row">
@@ -118,6 +121,5 @@
             </div>
             <br />
         }
-
     </div>
 </div>
